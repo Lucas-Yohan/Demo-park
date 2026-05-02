@@ -10,10 +10,10 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class UsuarioService {
 
-    private UsuarioRepository usuarioRepository;
+    private final UsuarioRepository usuarioRepository;
 
     @Transactional
-    public Usuarios create(Usuarios usuario){
+    public Usuarios salvar(Usuarios usuario){
         return usuarioRepository.save(usuario);
     }
 

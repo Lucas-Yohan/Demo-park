@@ -2,7 +2,6 @@ package com.lucasyohan.domain.Demo_Park.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;

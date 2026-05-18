@@ -14,6 +14,7 @@ import java.util.Objects;
 public class Usuarios implements Serializable {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(name = "username", nullable = false, unique = true, length = 100)
     private String username;

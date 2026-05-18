@@ -12,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/v2/usuarios")
@@ -39,6 +41,12 @@ public class UsuarioController {
     public ResponseEntity<Void> updatePassword(@RequestBody @Valid UsuarioPasswordDto passwordDto, @PathVariable Long id){
         usuarioService.updatePassword(passwordDto.getNewPassword(), passwordDto.getActualPassword(), passwordDto.getConfPassword(), id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping()
+    public ResponseEntity<List<UsuarioResponseDto>> getAll(){
+        List<Usuarios> users = usuarioService.buscarTodos();
+        return ResponseEntity.ok(users.stream().map(UsuarioMapper::toDto).toList());
     }
 
 

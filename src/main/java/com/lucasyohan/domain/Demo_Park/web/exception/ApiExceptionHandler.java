@@ -14,15 +14,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @Slf4j
 public class ApiExceptionHandler {
 
-    @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<ErrorMessage> entityNotFoundException(RuntimeException ex, HttpServletRequest request) {
-      log.warn("Api error - ", ex);
-      return ResponseEntity
-              .status(HttpStatus.NOT_FOUND)
-              .contentType(MediaType.APPLICATION_JSON)
-              .body(new ErrorMessage(request, HttpStatus.NOT_FOUND, ex.getMessage()));
-    }
-
     @ExceptionHandler(UsernameUniqueViolationException.class)
     public ResponseEntity<ErrorMessage> uniqueViolationException(RuntimeException ex, HttpServletRequest request) {
         log.warn("Api error - ", ex);
@@ -30,6 +21,15 @@ public class ApiExceptionHandler {
                 .status(HttpStatus.CONFLICT)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(new ErrorMessage(request, HttpStatus.CONFLICT, ex.getMessage()));
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<ErrorMessage> entityNotFoundException(RuntimeException ex, HttpServletRequest request) {
+      log.warn("Api error - ", ex);
+      return ResponseEntity
+              .status(HttpStatus.NOT_FOUND)
+              .contentType(MediaType.APPLICATION_JSON)
+              .body(new ErrorMessage(request, HttpStatus.NOT_FOUND, ex.getMessage()));
     }
 
 }

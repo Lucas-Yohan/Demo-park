@@ -1,10 +1,17 @@
 package com.lucasyohan.domain.Demo_Park.services;
 
 import com.lucasyohan.domain.Demo_Park.entities.Usuarios;
+import com.lucasyohan.domain.Demo_Park.exceptions.EntityNotFoundException;
+import com.lucasyohan.domain.Demo_Park.exceptions.UsernameUniqueViolationException;
 import com.lucasyohan.domain.Demo_Park.repositories.UsuariosRepository;
+import com.lucasyohan.domain.Demo_Park.web.dto.UsuarioResponseDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -14,12 +21,17 @@ public class UsuarioService {
 
     @Transactional
     public Usuarios salvar(Usuarios usuario){
-        return usuarioRepository.save(usuario);
+        try {
+            return usuarioRepository.save(usuario);
+        } catch (DataIntegrityViolationException ex) {
+            throw new UsernameUniqueViolationException(String.format("Usuário de Id %s já cadastrado", usuario.getId()));
+        }
     }
 
     @Transactional(readOnly = true)
     public Usuarios buscarPorId(Long id){
-        return usuarioRepository.findById(id).orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+        return usuarioRepository.findById(id).orElseThrow(() ->
+                new EntityNotFoundException(String.format("Usuário de Id %s não encontrado", id)));
     }
 
     @Transactional()
@@ -38,4 +50,8 @@ public class UsuarioService {
         return usuarioRepository.save(user);
     }
 
+    @Transactional(readOnly = true)
+    public List<Usuarios> buscarTodos() {
+        return usuarioRepository.findAll();
+    }
 }

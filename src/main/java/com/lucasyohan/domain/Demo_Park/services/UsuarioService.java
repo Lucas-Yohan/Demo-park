@@ -4,10 +4,8 @@ import com.lucasyohan.domain.Demo_Park.entities.Usuarios;
 import com.lucasyohan.domain.Demo_Park.exceptions.EntityNotFoundException;
 import com.lucasyohan.domain.Demo_Park.exceptions.UsernameUniqueViolationException;
 import com.lucasyohan.domain.Demo_Park.repositories.UsuariosRepository;
-import com.lucasyohan.domain.Demo_Park.web.dto.UsuarioResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,7 +22,7 @@ public class UsuarioService {
         try {
             return usuarioRepository.save(usuario);
         } catch (DataIntegrityViolationException ex) {
-            throw new UsernameUniqueViolationException(String.format("Usuário de Id %s já cadastrado", usuario.getId()));
+            throw new UsernameUniqueViolationException(String.format("Username '%s' já cadastrado", usuario.getUsername()));
         }
     }
 

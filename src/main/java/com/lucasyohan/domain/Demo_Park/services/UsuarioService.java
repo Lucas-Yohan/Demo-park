@@ -2,6 +2,7 @@ package com.lucasyohan.domain.Demo_Park.services;
 
 import com.lucasyohan.domain.Demo_Park.entities.Usuarios;
 import com.lucasyohan.domain.Demo_Park.exceptions.EntityNotFoundException;
+import com.lucasyohan.domain.Demo_Park.exceptions.MethodArgumentNotValidException;
 import com.lucasyohan.domain.Demo_Park.exceptions.UsernameUniqueViolationException;
 import com.lucasyohan.domain.Demo_Park.repositories.UsuariosRepository;
 import lombok.RequiredArgsConstructor;
@@ -37,11 +38,11 @@ public class UsuarioService {
         Usuarios user = buscarPorId(id);
 
         if (!user.getPassword().equals(actualPassword)) {
-            throw new RuntimeException("Senha atual incorreta");
+            throw new MethodArgumentNotValidException("Senha atual incorreta");
         }
 
         if (!newPassword.equals(confPassword)) {
-            throw new RuntimeException("As senhas não coincidem");
+            throw new MethodArgumentNotValidException("As senhas não coincidem");
         }
 
         user.setPassword(newPassword);

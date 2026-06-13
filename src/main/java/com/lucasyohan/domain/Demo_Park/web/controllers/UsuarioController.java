@@ -16,6 +16,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,7 +24,7 @@ import java.util.List;
 @Tag(name = "Usuários", description = "Endpoints para gerenciamento de usuários")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("api/v2/usuarios")
+@RequestMapping("/api/v2/usuarios")
 public class UsuarioController {
 
     private final UsuarioService usuarioService;
@@ -58,6 +59,7 @@ public class UsuarioController {
             }
     )
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN') OR (hasRole('CLIENTE') AND #id == authentication.principal.id)")
     public ResponseEntity<UsuarioResponseDto> getById(@PathVariable Long id){
         return ResponseEntity.ok(UsuarioMapper.toDto(usuarioService.buscarPorId(id)));
     }
@@ -73,6 +75,7 @@ public class UsuarioController {
     )
 
     @PatchMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CLIENTE') AND #id == authentication.principal.id")
     public ResponseEntity<Void> updatePassword(@RequestBody @Valid UsuarioPasswordDto passwordDto, @PathVariable Long id){
         usuarioService.updatePassword(passwordDto.getNewPassword(), passwordDto.getActualPassword(), passwordDto.getConfPassword(), id);
         return ResponseEntity.noContent().build();
@@ -84,6 +87,7 @@ public class UsuarioController {
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = UsuarioResponseDto.class)))
             }
     )
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping()
     public ResponseEntity<List<UsuarioResponseDto>> getAll(){
         List<Usuarios> users = usuarioService.buscarTodos();

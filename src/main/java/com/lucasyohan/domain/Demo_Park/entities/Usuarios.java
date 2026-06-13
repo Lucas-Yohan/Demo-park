@@ -2,6 +2,11 @@ package com.lucasyohan.domain.Demo_Park.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -24,12 +29,16 @@ public class Usuarios implements Serializable {
     @Enumerated(EnumType.STRING)
     private Role role = Role.ROLE_CLIENTE;
 
+    @CreatedDate
     @Column(name = "data_criacao")
     private LocalDateTime dataCriacao;
+    @LastModifiedDate
     @Column(name = "data_modificacao")
     private LocalDateTime dataModificacao;
+    @CreatedBy
     @Column(name = "criado_por")
     private LocalDateTime criadoPor;
+    @LastModifiedBy
     @Column(name = "modificado_por")
     private LocalDateTime modificadoPor;
 

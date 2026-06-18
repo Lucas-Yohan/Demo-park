@@ -30,6 +30,14 @@ public class SpringSecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/api/v2/usuarios").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v2/auth").permitAll()
+                        .requestMatchers(
+                                "/demo-park.html",
+                                "/demo-park/**",
+                                "/swagger-ui.html",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/webjars/**"
+                        ).permitAll()
                         .anyRequest().authenticated()
                 ).sessionManagement(
                         session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)

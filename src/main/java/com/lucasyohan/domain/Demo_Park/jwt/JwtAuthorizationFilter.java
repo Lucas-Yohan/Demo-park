@@ -1,5 +1,6 @@
 package com.lucasyohan.domain.Demo_Park.jwt;
 
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -34,10 +35,15 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
-
-        String username = JwtUtils.getUsernameFromToken(token);
-        toAuthentication(request, username);
-        filterChain.doFilter(request, response);
+        try{
+            String username = JwtUtils.getUsernameFromToken(token);
+            toAuthentication(request, username);
+            filterChain.doFilter(request, response);
+        }catch (JwtException ex) {
+            log.warn("Token inválido: {}", ex.getMessage());
+            filterChain.doFilter(request, response);
+            return;
+        }
     }
 
     private void toAuthentication(HttpServletRequest request, String username) {

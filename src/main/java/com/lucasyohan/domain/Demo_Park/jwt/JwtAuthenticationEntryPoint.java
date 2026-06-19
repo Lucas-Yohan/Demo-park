@@ -16,6 +16,6 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
         log.info("Authentication attempt for request URI: {}", request.getRequestURI());
         response.setHeader("www-authenticate", "Bearer realm='/api/v2/auth'");
-        response.sendError(HttpServletResponse.SC_FORBIDDEN);
+        response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
     }
 }

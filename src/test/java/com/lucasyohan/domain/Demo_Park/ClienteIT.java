@@ -2,6 +2,7 @@ package com.lucasyohan.domain.Demo_Park;
 
 import com.lucasyohan.domain.Demo_Park.web.dto.ClienteCreateDto;
 import com.lucasyohan.domain.Demo_Park.web.dto.ClienteResponseDto;
+import com.lucasyohan.domain.Demo_Park.web.dto.PageableDto;
 import com.lucasyohan.domain.Demo_Park.web.exception.ErrorMessage;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -161,6 +162,83 @@ public class ClienteIT {
 
         org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
         org.assertj.core.api.Assertions.assertThat(responseBody.getStatus()).isEqualTo(404);
+    }
+
+    @Test
+    public void buscarTodosClientes_ComPaginacaoPorAdmin_ReturnStatus200(){
+        PageableDto responseBody = testClient
+                .get()
+                .uri("/api/v2/clientes")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient,"ana@email.com", "123456"))
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(PageableDto.class)
+                .returnResult().getResponseBody();
+
+        org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(responseBody.getContent()).size().isEqualTo(2);
+        org.assertj.core.api.Assertions.assertThat(responseBody.getNumber()).isEqualTo(0);
+        org.assertj.core.api.Assertions.assertThat(responseBody.getTotalPages()).isEqualTo(1);
+
+        testClient
+                .get()
+                .uri("/api/v2/clientes?size=1&page=1")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient,"ana@email.com", "123456"))
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(PageableDto.class)
+                .returnResult().getResponseBody();
+
+        org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(responseBody.getContent()).size().isEqualTo(1);
+        org.assertj.core.api.Assertions.assertThat(responseBody.getNumber()).isEqualTo(1);
+        org.assertj.core.api.Assertions.assertThat(responseBody.getTotalPages()).isEqualTo(2);
+    }
+
+    @Test
+    public void buscarTodosClientes_ComRoleCliente_ReturnErrorMessage403(){
+        ErrorMessage responseBody = testClient
+                .get()
+                .uri("/api/v2/clientes?size=1&page=1")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient,"bia@email.com", "123456"))
+                .exchange()
+                .expectStatus().isForbidden()
+                .expectBody(ErrorMessage.class)
+                .returnResult().getResponseBody();
+
+        org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(responseBody.getStatus()).isEqualTo(403);
+    }
+
+    @Test
+    public void buscarDetalhesCliente_ComoCliente_ReturnStatus200(){
+        ClienteResponseDto responseBody = testClient
+                .get()
+                .uri("/api/v2/clientes/detalhes")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient,"bia@email.com", "123456"))
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(ClienteResponseDto.class)
+                .returnResult().getResponseBody();
+
+        org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(responseBody.getCpf()).isEqualTo("70853634017");
+        org.assertj.core.api.Assertions.assertThat(responseBody.getNome()).isEqualTo("Bianca Silva  ");
+    }
+
+    @Test
+    public void buscarDetalhesCliente_ComoAdmin_ReturnErrorMessage403(){
+        ErrorMessage responseBody = testClient
+                .get()
+                .uri("/api/v2/clientes/detalhes")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient,"ana@email.com", "123456"))
+                .exchange()
+                .expectStatus().isForbidden()
+                .expectBody(ErrorMessage.class)
+                .returnResult().getResponseBody();
+
+        org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(responseBody.getStatus()).isEqualTo(403);
     }
 
 

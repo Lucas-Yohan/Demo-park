@@ -4,8 +4,12 @@ import com.lucasyohan.domain.Demo_Park.entities.Cliente;
 import com.lucasyohan.domain.Demo_Park.exceptions.CpfUniqueViolationException;
 import com.lucasyohan.domain.Demo_Park.exceptions.EntityNotFoundException;
 import com.lucasyohan.domain.Demo_Park.repositories.ClienteRepository;
+import com.lucasyohan.domain.Demo_Park.repositories.UsuarioRepository;
+import com.lucasyohan.domain.Demo_Park.repositories.projection.ClienteProjection;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,5 +32,15 @@ public class ClienteService {
     public Cliente buscarPorId(Long id) {
         return clienteRepository.findById(id).
                 orElseThrow(() -> new EntityNotFoundException(String.format("Cliente de id '%s' não encontrado", id)));
+    }
+
+    @Transactional(readOnly = true)
+    public Page<ClienteProjection> buscarTodos(Pageable pageable) {
+        return clienteRepository.findAllPageable(pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public Cliente buscarPorUsuarioId(Long id) {
+        return clienteRepository.findByUsuarioId(id);
     }
 }

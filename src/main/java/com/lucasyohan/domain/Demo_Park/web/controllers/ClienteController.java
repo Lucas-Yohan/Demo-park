@@ -2,22 +2,27 @@ package com.lucasyohan.domain.Demo_Park.web.controllers;
 
 import com.lucasyohan.domain.Demo_Park.entities.Cliente;
 import com.lucasyohan.domain.Demo_Park.jwt.JwtUserDetails;
+import com.lucasyohan.domain.Demo_Park.repositories.projection.ClienteProjection;
 import com.lucasyohan.domain.Demo_Park.services.ClienteService;
 import com.lucasyohan.domain.Demo_Park.services.UsuarioService;
 import com.lucasyohan.domain.Demo_Park.web.dto.ClienteCreateDto;
 import com.lucasyohan.domain.Demo_Park.web.dto.ClienteResponseDto;
-import com.lucasyohan.domain.Demo_Park.web.dto.UsuarioResponseDto;
+import com.lucasyohan.domain.Demo_Park.web.dto.PageableDto;
 import com.lucasyohan.domain.Demo_Park.web.exception.ErrorMessage;
 import com.lucasyohan.domain.Demo_Park.web.mapper.ClienteMapper;
+import com.lucasyohan.domain.Demo_Park.web.mapper.PageableMapper;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -70,6 +75,38 @@ public class ClienteController {
     @GetMapping("/{id}")
     public ResponseEntity<ClienteResponseDto> getById(@PathVariable Long id) {
         Cliente cliente = clienteService.buscarPorId(id);
+        return ResponseEntity.ok(ClienteMapper.toDto(cliente));
+    }
+
+    @Operation(summary = "Buscar todos os clientes", description = "Retorna uma lista com todas as informações dos clientes",
+            security = @SecurityRequirement(name = "security"),
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Clientes encontrados com sucesso",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ClienteResponseDto.class))),
+                    @ApiResponse(responseCode = "403", description = "Acesso negado",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
+            }
+    )
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @GetMapping
+    public ResponseEntity<PageableDto> getAll(@Parameter(hidden = true) @PageableDefault(size = 5, sort = {"nome"}) Pageable pageable) {
+        Page<ClienteProjection> clientes = clienteService.buscarTodos(pageable);
+        return ResponseEntity.ok(PageableMapper.toDto(clientes));
+    }
+
+    @Operation(summary = "Buscar todos os clientes", description = "Retorna uma lista com todas as informações dos clientes",
+            security = @SecurityRequirement(name = "security"),
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Clientes encontrados com sucesso",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ClienteResponseDto.class))),
+                    @ApiResponse(responseCode = "403", description = "Acesso negado",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
+            }
+    )
+    @PreAuthorize("hasRole('ROLE_CLIENTE')")
+    @GetMapping("/detalhes")
+    public ResponseEntity<ClienteResponseDto> getDetalhes(@AuthenticationPrincipal JwtUserDetails userDetails) {
+        Cliente cliente = clienteService.buscarPorUsuarioId(userDetails.getId());
         return ResponseEntity.ok(ClienteMapper.toDto(cliente));
     }
 

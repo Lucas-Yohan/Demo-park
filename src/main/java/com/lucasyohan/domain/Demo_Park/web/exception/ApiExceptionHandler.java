@@ -1,9 +1,6 @@
 package com.lucasyohan.domain.Demo_Park.web.exception;
 
-import com.lucasyohan.domain.Demo_Park.exceptions.CpfUniqueViolationException;
-import com.lucasyohan.domain.Demo_Park.exceptions.EntityNotFoundException;
-import com.lucasyohan.domain.Demo_Park.exceptions.PasswordNotValidException;
-import com.lucasyohan.domain.Demo_Park.exceptions.UsernameUniqueViolationException;
+import com.lucasyohan.domain.Demo_Park.exceptions.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -44,6 +41,15 @@ public class ApiExceptionHandler {
                 .status(HttpStatus.CONFLICT)
                 .contentType(MediaType.APPLICATION_JSON)
               .body(new ErrorMessage(request, HttpStatus.CONFLICT, ex.getMessage()));
+    }
+
+    @ExceptionHandler(CodigoUnioqueViolationException.class)
+    public ResponseEntity<ErrorMessage> codigoUniqueViolationException(RuntimeException ex, HttpServletRequest request) {
+        log.warn("Api error - ", ex);
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(new ErrorMessage(request, HttpStatus.CONFLICT, ex.getMessage()));
     }
 
     @ExceptionHandler(CpfUniqueViolationException.class)

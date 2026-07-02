@@ -46,10 +46,10 @@ public class Cliente implements Serializable {
     private LocalDateTime dataModificacao;
     @CreatedBy
     @Column(name = "criado_por")
-    private LocalDateTime criadoPor;
+    private String criadoPor;
     @LastModifiedBy
     @Column(name = "modificado_por")
-    private LocalDateTime modificadoPor;
+    private String modificadoPor;
 
     @Override
     public boolean equals(Object o) {
